@@ -1,0 +1,1291 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Altınşehir Ahmet Erkek Kuaförü | Randevu & Yönetim</title>
+  <meta name="theme-color" content="#0f172a" />
+  <meta name="description" content="Altınşehir Ahmet Erkek Kuaförü çoklu usta randevu sistemi, randevu sorgulama ve yetkili yönetim paneli." />
+  <link id="pwa-manifest" rel="manifest" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+    body {
+      font-family: 'Inter', sans-serif;
+      background-color: #f8fafc;
+      color: #0f172a;
+    }
+    .glass-card {
+      background: #ffffff;
+      border: 1px solid #e2e8f0;
+      box-shadow: 0 4px 20px -2px rgba(15, 23, 42, 0.05);
+    }
+  </style>
+</head>
+<body class="min-h-screen flex flex-col">
+
+  <!-- PWA Kurulum Bilgilendirme Şeridi -->
+  <div id="pwa-banner" class="bg-amber-50 border-b border-amber-200 px-4 py-2 text-xs sm:text-sm text-amber-950">
+    <div class="max-w-6xl mx-auto flex flex-wrap items-center justify-between gap-2">
+      <div class="flex items-center gap-2">
+        <span class="font-bold">📱 Uygulama Kurulumu:</span>
+        <span>Telefonunda uygulama olarak kullanmak için tarayıcı menüsünden <strong>"Ana Ekrana Ekle"</strong> seçeneğini kullanabilirsin.</span>
+      </div>
+      <button id="pwa-install-btn" class="hidden bg-amber-600 hover:bg-amber-700 text-white font-semibold px-3 py-1.5 rounded-xl transition cursor-pointer">
+        Uygulamayı Yükle
+      </button>
+    </div>
+  </div>
+
+  <!-- Üst Menü ve Sekmeler -->
+  <header class="bg-slate-900 text-white sticky top-0 z-30 shadow-md">
+    <div class="max-w-6xl mx-auto px-4 py-3.5 flex flex-col md:flex-row items-center justify-between gap-3">
+      <div class="flex items-center gap-3">
+        <div class="w-11 h-11 rounded-xl bg-amber-500 text-slate-950 flex items-center justify-center font-extrabold text-lg shadow">
+          ✂️
+        </div>
+        <div>
+          <h1 id="header-shop-name" class="text-lg sm:text-xl font-extrabold tracking-tight text-white">
+            Altınşehir Ahmet Erkek Kuaförü
+          </h1>
+          <p class="text-xs text-slate-300 flex items-center gap-2 flex-wrap">
+            <span id="header-hours">09:00 - 21:00</span>
+            <span>•</span>
+            <span id="sync-status" class="text-emerald-400 font-medium">● Canlı Takvim Aktif</span>
+          </p>
+        </div>
+      </div>
+
+      <!-- Ana Sekmeler -->
+      <nav class="flex items-center bg-slate-800 p-1 rounded-xl gap-1 w-full md:w-auto justify-center">
+        <button onclick="switchTab('booking')" id="tab-booking" class="tab-btn flex-1 md:flex-initial px-4 py-2.5 rounded-xl text-sm font-semibold bg-amber-500 text-slate-950 transition cursor-pointer">
+          Randevu Al
+        </button>
+        <button onclick="switchTab('my-appointments')" id="tab-my-appointments" class="tab-btn flex-1 md:flex-initial px-4 py-2.5 rounded-xl text-sm font-semibold text-slate-200 hover:bg-slate-700 transition cursor-pointer">
+          Randevularım
+        </button>
+        <button onclick="switchTab('admin')" id="tab-admin" class="tab-btn flex-1 md:flex-initial px-4 py-2.5 rounded-xl text-sm font-semibold text-slate-200 hover:bg-slate-700 transition cursor-pointer">
+          Yetkili Paneli
+        </button>
+      </nav>
+    </div>
+  </header>
+
+  <!-- Ana İçerik -->
+  <main class="flex-1 max-w-6xl w-full mx-auto px-4 py-6">
+
+    <!-- SEKME 1: RANDEVU AL -->
+    <section id="section-booking" class="space-y-6">
+      <div class="glass-card rounded-2xl p-5 sm:p-6 bg-gradient-to-r from-slate-900 to-slate-800 text-white flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div>
+          <span class="inline-block text-xs uppercase tracking-wider bg-amber-500/20 text-amber-300 border border-amber-400/30 px-2.5 py-1 rounded-full font-semibold mb-2">
+            Hoş Geldiniz
+          </span>
+          <h2 id="hero-shop-name" class="text-xl sm:text-2xl font-bold">Altınşehir Ahmet Erkek Kuaförü</h2>
+          <p id="shop-address-display" class="text-sm text-slate-300 mt-1">Altınşehir Mahallesi, Ana Cadde No: 14</p>
+        </div>
+        <div class="flex flex-wrap items-center gap-2.5">
+          <a id="call-shop-link" href="tel:+905320000000" class="bg-slate-700 hover:bg-slate-600 text-white text-sm font-semibold px-4 py-2.5 rounded-xl transition">
+            📞 Dükkanı Ara
+          </a>
+          <a id="map-shop-link" href="https://maps.google.com/?q=Altınşehir+Ahmet+Erkek+Kuaförü" target="_blank" rel="noopener noreferrer" class="bg-amber-500 hover:bg-amber-400 text-slate-950 text-sm font-bold px-4 py-2.5 rounded-xl transition">
+            📍 Yol Tarifi / Konum
+          </a>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <!-- Usta, Hizmet ve Saat Seçimi -->
+        <div class="lg:col-span-2 glass-card rounded-2xl p-5 sm:p-6 space-y-6">
+
+          <!-- 1. Usta Seçimi -->
+          <div class="space-y-3">
+            <div class="flex items-center justify-between border-b border-slate-100 pb-2.5">
+              <h3 class="text-lg font-bold text-slate-900">1. Usta Seçin</h3>
+              <span class="text-xs text-slate-500">Her ustanın takvimi ayrıdır</span>
+            </div>
+            <div id="barbers-list" class="grid grid-cols-1 sm:grid-cols-2 gap-3"></div>
+          </div>
+
+          <!-- 2. Hizmet Seçimi -->
+          <div class="space-y-3 pt-2 border-t border-slate-100">
+            <div class="flex items-center justify-between">
+              <h3 class="text-lg font-bold text-slate-900">2. Hizmet Seçin</h3>
+              <span class="text-xs text-slate-500">Birden fazla seçebilirsiniz</span>
+            </div>
+            <div id="services-list" class="grid grid-cols-1 sm:grid-cols-2 gap-3"></div>
+          </div>
+
+          <!-- 3. Tarih ve Saat Seçimi -->
+          <div class="pt-4 border-t border-slate-100 space-y-4">
+            <h3 class="text-lg font-bold text-slate-900">3. Tarih ve Saat Seçin</h3>
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div>
+                <label class="block text-xs font-semibold text-slate-600 mb-1.5">Tarih</label>
+                <input type="date" id="booking-date" onchange="renderTimeSlots()" class="w-full rounded-xl border border-slate-300 px-3.5 py-2.5 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-amber-500" />
+              </div>
+              <div>
+                <label class="block text-xs font-semibold text-slate-600 mb-1.5">Seçilen Usta & Saat</label>
+                <input type="text" id="selected-time-display" readonly placeholder="Henüz saat seçilmedi" class="w-full rounded-xl border border-slate-200 bg-slate-50 px-3.5 py-2.5 text-sm font-semibold text-slate-700" />
+              </div>
+            </div>
+            <div id="time-slots-grid" class="grid grid-cols-3 sm:grid-cols-5 gap-2 pt-1"></div>
+          </div>
+        </div>
+
+        <!-- Müşteri Bilgileri ve Özet -->
+        <div class="glass-card rounded-2xl p-5 sm:p-6 h-fit space-y-4">
+          <h3 class="text-lg font-bold text-slate-900 border-b border-slate-100 pb-3">4. Randevu Özeti</h3>
+
+          <div class="bg-slate-50 rounded-xl p-3.5 space-y-2 text-sm">
+            <div class="flex justify-between text-slate-600">
+              <span>Seçilen Usta:</span>
+              <span id="summary-barber" class="font-bold text-slate-900">-</span>
+            </div>
+            <div class="flex justify-between text-slate-600">
+              <span>Seçilen Hizmetler:</span>
+              <span id="summary-services" class="font-semibold text-slate-900 text-right max-w-[170px]">Seçilmedi</span>
+            </div>
+            <div class="flex justify-between text-slate-600">
+              <span>Tahmini Süre:</span>
+              <span id="summary-duration" class="font-semibold text-slate-900">0 dk</span>
+            </div>
+            <div class="flex justify-between text-base font-extrabold text-slate-900 pt-2 border-t border-slate-200">
+              <span>Toplam Tutar:</span>
+              <span id="summary-price" class="text-amber-600">0 ₺</span>
+            </div>
+          </div>
+
+          <form onsubmit="submitBooking(event)" class="space-y-3">
+            <div>
+              <label class="block text-xs font-semibold text-slate-600 mb-1">Adınız Soyadınız</label>
+              <input type="text" id="customer-name" required placeholder="Örn: Mehmet Yılmaz" class="w-full rounded-xl border border-slate-300 px-3.5 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-amber-500" />
+            </div>
+            <div>
+              <label class="block text-xs font-semibold text-slate-600 mb-1">Telefon Numaranız</label>
+              <input type="tel" id="customer-phone" required placeholder="05XX XXX XX XX" class="w-full rounded-xl border border-slate-300 px-3.5 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-amber-500" />
+            </div>
+            <div>
+              <label class="block text-xs font-semibold text-slate-600 mb-1">Not (İsteğe bağlı)</label>
+              <input type="text" id="customer-note" placeholder="Örn: Yanlar 1 numara, üstü makas..." class="w-full rounded-xl border border-slate-300 px-3.5 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-amber-500" />
+            </div>
+            <button type="submit" class="w-full bg-amber-500 hover:bg-amber-400 text-slate-950 font-extrabold py-3 rounded-xl shadow transition cursor-pointer">
+              Randevuyu Onayla
+            </button>
+          </form>
+
+          <div id="booking-confirmation" class="hidden rounded-xl bg-emerald-50 border border-emerald-200 p-3.5 text-xs text-emerald-900 space-y-2"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SEKME 2: RANDEVULARIM -->
+    <section id="section-my-appointments" class="hidden space-y-6">
+      <div class="glass-card rounded-2xl p-5 sm:p-6 max-w-3xl mx-auto space-y-5">
+        <div>
+          <h2 class="text-xl font-bold text-slate-900">Randevularım</h2>
+          <p class="text-sm text-slate-500 mt-1">Telefon numaranızı yazarak hangi ustadan, hangi saatte randevu aldığınızı görebilir veya iptal edebilirsiniz.</p>
+        </div>
+
+        <form onsubmit="searchMyAppointments(event)" class="flex flex-col sm:flex-row gap-2.5">
+          <input type="tel" id="lookup-phone" required placeholder="Telefon numaranızı girin (Örn: 05351112233)" class="flex-1 rounded-xl border border-slate-300 px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-amber-500" />
+          <button type="submit" class="bg-slate-900 hover:bg-slate-800 text-white font-semibold px-5 py-2.5 rounded-xl text-sm transition cursor-pointer">
+            Randevu Sorgula
+          </button>
+        </form>
+
+        <div id="my-appointments-result" class="space-y-3">
+          <p class="text-sm text-slate-400 text-center py-6">Randevularınızı listelemek için telefon numaranızı girin.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- SEKME 3: YETKİLİ PANELİ -->
+    <section id="section-admin" class="hidden space-y-6">
+      <!-- PIN Giriş Ekranı -->
+      <div id="admin-login-box" class="glass-card rounded-2xl p-6 max-w-md mx-auto text-center space-y-4">
+        <div class="w-12 h-12 rounded-2xl bg-slate-900 text-amber-400 flex items-center justify-center mx-auto text-xl font-bold">
+          🔐
+        </div>
+        <div>
+          <h2 class="text-xl font-bold text-slate-900">Yetkili Kullanıcı Girişi</h2>
+          <p class="text-xs text-slate-500 mt-1">Altınşehir Ahmet Erkek Kuaförü yönetim paneline erişmek için PIN girin (Varsayılan: <strong>1234</strong>).</p>
+        </div>
+        <form onsubmit="verifyAdminPin(event)" class="space-y-3">
+          <input type="password" id="admin-pin-input" maxlength="8" required placeholder="PIN Kodu" class="w-full text-center tracking-widest text-lg font-bold rounded-xl border border-slate-300 px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-amber-500" />
+          <button type="submit" class="w-full bg-slate-900 hover:bg-slate-800 text-white font-bold py-2.5 rounded-xl text-sm transition cursor-pointer">
+            Panele Gir
+          </button>
+        </form>
+        <p id="admin-pin-error" class="text-xs text-rose-600 font-semibold hidden">Hatalı PIN kodu girdiniz.</p>
+      </div>
+
+      <!-- Yetkili İçerik -->
+      <div id="admin-panel-content" class="hidden space-y-6">
+        <div class="flex flex-wrap items-center justify-between gap-3 glass-card rounded-2xl p-4">
+          <div class="flex items-center gap-2 flex-wrap">
+            <button onclick="switchAdminSubTab('appointments')" id="subtab-appointments" class="px-4 py-2.5 rounded-xl text-xs sm:text-sm font-bold bg-slate-900 text-white cursor-pointer">
+              📋 Randevu Defteri
+            </button>
+            <button onclick="switchAdminSubTab('barbers')" id="subtab-barbers" class="px-4 py-2.5 rounded-xl text-xs sm:text-sm font-semibold bg-slate-100 text-slate-700 hover:bg-slate-200 cursor-pointer">
+              💈 Ustalar / Personel
+            </button>
+            <button onclick="switchAdminSubTab('location')" id="subtab-location" class="px-4 py-2.5 rounded-xl text-xs sm:text-sm font-semibold bg-slate-100 text-slate-700 hover:bg-slate-200 cursor-pointer">
+              📍 Konum Paylaş & Dükkan Bilgisi
+            </button>
+            <button onclick="switchAdminSubTab('services')" id="subtab-services" class="px-4 py-2.5 rounded-xl text-xs sm:text-sm font-semibold bg-slate-100 text-slate-700 hover:bg-slate-200 cursor-pointer">
+              ✂️ Hizmet & Fiyatlar
+            </button>
+          </div>
+          <button onclick="lockAdminPanel()" class="text-xs font-semibold text-rose-600 hover:underline px-3 py-2 cursor-pointer">
+            Çıkış / Kilitle
+          </button>
+        </div>
+
+        <!-- Alt Sekme A: Randevu Defteri -->
+        <div id="admin-sub-appointments" class="space-y-5">
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+            <div class="glass-card rounded-2xl p-4">
+              <p class="text-xs text-slate-500 font-medium">Bugünkü Randevu</p>
+              <p id="stat-today-count" class="text-2xl font-extrabold text-slate-900 mt-1">0</p>
+            </div>
+            <div class="glass-card rounded-2xl p-4">
+              <p class="text-xs text-slate-500 font-medium">Tamamlanan İşlem</p>
+              <p id="stat-completed-count" class="text-2xl font-extrabold text-emerald-600 mt-1">0</p>
+            </div>
+            <div class="glass-card rounded-2xl p-4">
+              <p class="text-xs text-slate-500 font-medium">Tamamlanan Tahmini Ciro</p>
+              <p id="stat-revenue" class="text-2xl font-extrabold text-amber-600 mt-1">0 ₺</p>
+            </div>
+          </div>
+
+          <!-- Usta Bazlı Özet Kartları -->
+          <div id="barber-stats-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4"></div>
+
+          <div class="glass-card rounded-2xl p-5 space-y-4">
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-100 pb-3">
+              <h3 class="text-lg font-bold text-slate-900">Randevu Listesi</h3>
+              <div class="flex flex-wrap items-center gap-2">
+                <select id="admin-filter-barber" onchange="renderAdminAppointments()" class="rounded-xl border border-slate-300 px-3 py-2 text-xs font-semibold bg-white">
+                  <option value="">Tüm Ustalar</option>
+                </select>
+                <input type="date" id="admin-filter-date" onchange="renderAdminAppointments()" class="rounded-xl border border-slate-300 px-3 py-2 text-xs font-semibold" />
+                <button onclick="document.getElementById('admin-filter-date').value=''; document.getElementById('admin-filter-barber').value=''; renderAdminAppointments();" class="text-xs font-semibold text-slate-600 bg-slate-100 px-3 py-2 rounded-xl hover:bg-slate-200 cursor-pointer">
+                  Sıfırla
+                </button>
+              </div>
+            </div>
+            <div id="admin-appointments-list" class="space-y-3"></div>
+          </div>
+        </div>
+
+        <!-- Alt Sekme B: Çoklu Usta Yönetimi -->
+        <div id="admin-sub-barbers" class="hidden space-y-5">
+          <div class="glass-card rounded-2xl p-5 sm:p-6 space-y-4">
+            <div>
+              <h3 class="text-lg font-bold text-slate-900">Yeni Usta / Çalışan Ekle</h3>
+              <p class="text-xs text-slate-500 mt-0.5">Eklediğiniz her usta müşteri ekranında ayrı koltuk ve bağımsız takvim olarak görünür.</p>
+            </div>
+            <form onsubmit="addNewBarber(event)" class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+              <input type="text" id="new-barber-name" required placeholder="Usta Adı (Örn: Burak Usta)" class="rounded-xl border border-slate-300 px-3.5 py-2.5 text-sm font-semibold" />
+              <input type="text" id="new-barber-role" placeholder="Unvan / Uzmanlık (Örn: Saç & Sakal)" class="rounded-xl border border-slate-300 px-3.5 py-2.5 text-sm" />
+              <button type="submit" class="bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold py-2.5 px-4 rounded-xl text-sm transition cursor-pointer">
+                + Usta Ekle
+              </button>
+            </form>
+          </div>
+
+          <div class="glass-card rounded-2xl p-5 sm:p-6 space-y-3">
+            <h3 class="text-lg font-bold text-slate-900">Dükkandaki Ustalar</h3>
+            <div id="admin-barbers-list" class="divide-y divide-slate-100"></div>
+          </div>
+        </div>
+
+        <!-- Alt Sekme C: Yetkili Konum Paylaş & Dükkan Bilgisi -->
+        <div id="admin-sub-location" class="hidden space-y-5">
+          <div class="glass-card rounded-2xl p-5 sm:p-6 space-y-5">
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-100 pb-4">
+              <div>
+                <h3 class="text-lg font-bold text-slate-900">Yetkili Konum Paylaşım Bilgisi</h3>
+                <p class="text-xs sm:text-sm text-slate-500 mt-0.5">Dükkanın canlı GPS konumunu alın veya koordinat/adres girerek müşterilerle tek tıkla paylaşın.</p>
+              </div>
+              <button type="button" onclick="fetchCurrentGpsLocation()" class="bg-emerald-600 hover:bg-emerald-700 text-white text-xs sm:text-sm font-bold px-4 py-2.5 rounded-xl shadow transition cursor-pointer">
+                🛰️ Mevcut Konumumu Al (GPS)
+              </button>
+            </div>
+
+            <div id="gps-status-box" class="hidden rounded-xl p-3 text-xs font-medium"></div>
+
+            <form onsubmit="saveShopSettings(event)" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <label class="block text-xs font-semibold text-slate-600 mb-1">Dükkan Adı</label>
+                <input type="text" id="cfg-shop-name" required class="w-full rounded-xl border border-slate-300 px-3.5 py-2.5 text-sm font-semibold" />
+              </div>
+              <div>
+                <label class="block text-xs font-semibold text-slate-600 mb-1">İletişim / WhatsApp Telefonu</label>
+                <input type="text" id="cfg-shop-phone" required class="w-full rounded-xl border border-slate-300 px-3.5 py-2.5 text-sm font-semibold" />
+              </div>
+              <div>
+                <label class="block text-xs font-semibold text-slate-600 mb-1">Açık Adres</label>
+                <input type="text" id="cfg-shop-address" required class="w-full rounded-xl border border-slate-300 px-3.5 py-2.5 text-sm" />
+              </div>
+              <div>
+                <label class="block text-xs font-semibold text-slate-600 mb-1">Çalışma Saatleri</label>
+                <input type="text" id="cfg-shop-hours" required class="w-full rounded-xl border border-slate-300 px-3.5 py-2.5 text-sm" />
+              </div>
+              <div>
+                <label class="block text-xs font-semibold text-slate-600 mb-1">Enlem (Latitude)</label>
+                <input type="text" id="cfg-shop-lat" placeholder="Örn: 40.1885" class="w-full rounded-xl border border-slate-300 px-3.5 py-2.5 text-sm font-mono" />
+              </div>
+              <div>
+                <label class="block text-xs font-semibold text-slate-600 mb-1">Boylam (Longitude)</label>
+                <input type="text" id="cfg-shop-lng" placeholder="Örn: 29.0610" class="w-full rounded-xl border border-slate-300 px-3.5 py-2.5 text-sm font-mono" />
+              </div>
+              <div class="md:col-span-2">
+                <label class="block text-xs font-semibold text-slate-600 mb-1">Paylaşılacak Konum Linki (Google Haritalar)</label>
+                <input type="url" id="cfg-shop-map-url" placeholder="https://maps.google.com/?q=..." class="w-full rounded-xl border border-slate-300 px-3.5 py-2.5 text-sm text-blue-700" />
+              </div>
+              <div>
+                <label class="block text-xs font-semibold text-slate-600 mb-1">Yetkili Panel PIN Kodu</label>
+                <input type="text" id="cfg-admin-pin" required minlength="4" maxlength="8" class="w-full rounded-xl border border-slate-300 px-3.5 py-2.5 text-sm font-bold" />
+              </div>
+
+              <div class="md:col-span-2 flex flex-wrap items-center gap-3 pt-2">
+                <button type="submit" class="bg-slate-900 hover:bg-slate-800 text-white font-bold px-5 py-2.5 rounded-xl text-sm transition cursor-pointer">
+                  💾 Bilgileri ve Konumu Kaydet
+                </button>
+                <button type="button" onclick="shareLocationOnWhatsApp()" class="bg-emerald-500 hover:bg-emerald-600 text-white font-bold px-4 py-2.5 rounded-xl text-sm transition cursor-pointer">
+                  💬 Konumu WhatsApp'tan Paylaş
+                </button>
+                <button type="button" onclick="copyLocationInfo()" class="bg-slate-100 hover:bg-slate-200 text-slate-800 font-semibold px-4 py-2.5 rounded-xl text-sm transition cursor-pointer">
+                  📋 Konum Metnini Kopyala
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+
+        <!-- Alt Sekme D: Hizmet & Fiyatlar -->
+        <div id="admin-sub-services" class="hidden space-y-5">
+          <div class="glass-card rounded-2xl p-5 sm:p-6 space-y-4">
+            <h3 class="text-lg font-bold text-slate-900">Yeni Hizmet Ekle</h3>
+            <form onsubmit="addNewService(event)" class="grid grid-cols-1 sm:grid-cols-4 gap-3">
+              <input type="text" id="new-srv-name" required placeholder="Hizmet adı (Örn: Çocuk Tıraşı)" class="sm:col-span-2 rounded-xl border border-slate-300 px-3.5 py-2.5 text-sm" />
+              <input type="number" id="new-srv-duration" required min="10" step="5" placeholder="Süre (dk)" class="rounded-xl border border-slate-300 px-3.5 py-2.5 text-sm" />
+              <input type="number" id="new-srv-price" required min="0" step="10" placeholder="Fiyat (₺)" class="rounded-xl border border-slate-300 px-3.5 py-2.5 text-sm" />
+              <button type="submit" class="sm:col-span-4 bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold py-2.5 rounded-xl text-sm transition cursor-pointer">
+                + Hizmet Ekle
+              </button>
+            </form>
+          </div>
+
+          <div class="glass-card rounded-2xl p-5 sm:p-6 space-y-3">
+            <h3 class="text-lg font-bold text-slate-900">Mevcut Hizmetler</h3>
+            <div id="admin-services-list" class="divide-y divide-slate-100"></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <footer class="bg-white border-t border-slate-200 py-4 text-center text-xs text-slate-500">
+    <span id="footer-shop-name">Altınşehir Ahmet Erkek Kuaförü</span> • Çoklu Usta Randevu & Konum Sistemi
+  </footer>
+
+  <!-- Mesaj Bildirim Kutusu -->
+  <div id="toast-box" class="fixed bottom-4 right-4 z-50 hidden max-w-sm bg-slate-900 text-white text-xs sm:text-sm font-medium px-4 py-3 rounded-xl shadow-lg border border-slate-700"></div>
+
+  <script>
+    // Bildirim Mesajı Gösterici
+    function showMessage(msg) {
+      const box = document.getElementById("toast-box");
+      box.textContent = msg;
+      box.classList.remove("hidden");
+      clearTimeout(box._timer);
+      box._timer = setTimeout(() => box.classList.add("hidden"), 3200);
+    }
+
+    // PWA Dinamik Manifest Oluşturucu
+    (function setupManifest() {
+      const manifestData = {
+        name: "Altınşehir Ahmet Erkek Kuaförü",
+        short_name: "Ahmet Kuaför",
+        start_url: "./",
+        display: "standalone",
+        background_color: "#0f172a",
+        theme_color: "#0f172a",
+        icons: [
+          {
+            src: "data:image/svg+xml," + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><rect width="100" height="100" rx="22" fill="#0f172a"/><text x="50%" y="62%" dominant-baseline="middle" text-anchor="middle" font-size="52">✂️</text></svg>'),
+            sizes: "192x192",
+            type: "image/svg+xml"
+          }
+        ]
+      };
+      const blob = new Blob([JSON.stringify(manifestData)], { type: "application/json" });
+      document.getElementById("pwa-manifest").href = URL.createObjectURL(blob);
+    })();
+
+    // Android / Chrome PWA Kurulum İstemini Yakalama
+    let deferredInstallPrompt = null;
+    window.addEventListener("beforeinstallprompt", (e) => {
+      e.preventDefault();
+      deferredInstallPrompt = e;
+      const btn = document.getElementById("pwa-install-btn");
+      btn.classList.remove("hidden");
+      btn.onclick = async () => {
+        deferredInstallPrompt.prompt();
+        await deferredInstallPrompt.userChoice;
+        deferredInstallPrompt = null;
+        btn.classList.add("hidden");
+      };
+    });
+
+    const STORAGE_KEY = "altinsehir_ahmet_kuafor_multi_v2";
+    const syncChannel = typeof BroadcastChannel !== "undefined"
+      ? new BroadcastChannel("altinsehir_ahmet_kuafor_multi_sync")
+      : { postMessage: () => {}, onmessage: null };
+
+    const defaultState = {
+      shop: {
+        name: "Altınşehir Ahmet Erkek Kuaförü",
+        phone: "0532 000 00 00",
+        address: "Altınşehir Mahallesi, Ana Cadde No: 14",
+        hours: "09:00 - 21:00",
+        lat: "",
+        lng: "",
+        mapUrl: "https://maps.google.com/?q=Altınşehir+Ahmet+Erkek+Kuaförü",
+        adminPin: "1234"
+      },
+      barbers: [
+        { id: "brb-1", name: "Ahmet Usta", role: "Salon Sahibi & Baş Usta", active: true },
+        { id: "brb-2", name: "Murat Usta", role: "Saç & Sakal Tasarımı", active: true }
+      ],
+      services: [
+        { id: "srv-1", name: "Saç Kesimi", duration: 30, price: 350 },
+        { id: "srv-2", name: "Sakal Tıraşı", duration: 20, price: 200 },
+        { id: "srv-3", name: "Saç + Sakal Kombo", duration: 45, price: 500 },
+        { id: "srv-4", name: "Yıkama & Fön / Bakım", duration: 20, price: 180 }
+      ],
+      appointments: []
+    };
+
+    function getTodayISO() {
+      const now = new Date();
+      const offset = now.getTimezoneOffset() * 60000;
+      return new Date(now.getTime() - offset).toISOString().split("T")[0];
+    }
+
+    function loadState() {
+      try {
+        const raw = localStorage.getItem(STORAGE_KEY);
+        if (!raw) {
+          const seeded = JSON.parse(JSON.stringify(defaultState));
+          const today = getTodayISO();
+          seeded.appointments = [
+            {
+              id: "apt-101",
+              barberId: "brb-1",
+              barberName: "Ahmet Usta",
+              customerName: "Kerem Demir",
+              phone: "05351112233",
+              date: today,
+              time: "10:30",
+              services: ["Saç + Sakal Kombo"],
+              totalDuration: 45,
+              totalPrice: 500,
+              note: "",
+              status: "confirmed"
+            },
+            {
+              id: "apt-102",
+              barberId: "brb-2",
+              barberName: "Murat Usta",
+              customerName: "Emre Kaya",
+              phone: "05442223344",
+              date: today,
+              time: "10:30",
+              services: ["Saç Kesimi"],
+              totalDuration: 30,
+              totalPrice: 350,
+              note: "Ense sıfır",
+              status: "completed"
+            }
+          ];
+          localStorage.setItem(STORAGE_KEY, JSON.stringify(seeded));
+          return seeded;
+        }
+        const parsed = JSON.parse(raw);
+        if (!Array.isArray(parsed.barbers) || parsed.barbers.length === 0) {
+          parsed.barbers = JSON.parse(JSON.stringify(defaultState.barbers));
+        }
+        return parsed;
+      } catch (e) {
+        return JSON.parse(JSON.stringify(defaultState));
+      }
+    }
+
+    let appState = loadState();
+    let selectedBarberId = appState.barbers.find((b) => b.active !== false)?.id || appState.barbers[0].id;
+    let selectedServiceIds = new Set(["srv-1"]);
+    let selectedTimeSlot = "";
+    let isAdminUnlocked = false;
+
+    function saveState(broadcast = true) {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(appState));
+      if (broadcast) {
+        syncChannel.postMessage({ type: "STATE_UPDATED", at: Date.now() });
+      }
+      flashSyncStatus();
+    }
+
+    function flashSyncStatus() {
+      const el = document.getElementById("sync-status");
+      el.textContent = "● Az Önce Eşitlendi";
+      setTimeout(() => {
+        el.textContent = "● Canlı Takvim Aktif";
+      }, 1800);
+    }
+
+    syncChannel.onmessage = (event) => {
+      if (event.data && event.data.type === "STATE_UPDATED") {
+        appState = loadState();
+        refreshAllViews();
+        flashSyncStatus();
+      }
+    };
+
+    window.addEventListener("storage", (e) => {
+      if (e.key === STORAGE_KEY) {
+        appState = loadState();
+        refreshAllViews();
+      }
+    });
+
+    function refreshAllViews() {
+      applyShopBranding();
+      renderBarbers();
+      renderServices();
+      renderTimeSlots();
+      if (isAdminUnlocked) {
+        renderAdminAppointments();
+        renderAdminBarbers();
+        renderAdminServices();
+      }
+    }
+
+    function applyShopBranding() {
+      const s = appState.shop;
+      document.title = `${s.name} | Randevu & Yönetim`;
+      document.getElementById("header-shop-name").textContent = s.name;
+      document.getElementById("header-hours").textContent = s.hours;
+      document.getElementById("hero-shop-name").textContent = s.name;
+      document.getElementById("footer-shop-name").textContent = s.name;
+
+      const locText = (s.lat && s.lng)
+        ? `${s.address} • GPS: ${Number(s.lat).toFixed(5)}, ${Number(s.lng).toFixed(5)}`
+        : s.address;
+      document.getElementById("shop-address-display").textContent = locText;
+
+      const cleanPhone = (s.phone || "").replace(/\D/g, "");
+      document.getElementById("call-shop-link").href = `tel:+90${cleanPhone.replace(/^0/, "")}`;
+      document.getElementById("map-shop-link").href = buildMapLink(s);
+
+      document.getElementById("cfg-shop-name").value = s.name || "";
+      document.getElementById("cfg-shop-phone").value = s.phone || "";
+      document.getElementById("cfg-shop-address").value = s.address || "";
+      document.getElementById("cfg-shop-hours").value = s.hours || "";
+      document.getElementById("cfg-shop-lat").value = s.lat || "";
+      document.getElementById("cfg-shop-lng").value = s.lng || "";
+      document.getElementById("cfg-shop-map-url").value = buildMapLink(s);
+      document.getElementById("cfg-admin-pin").value = s.adminPin || "1234";
+    }
+
+    function buildMapLink(shop) {
+      if (shop.lat && shop.lng) {
+        return `https://www.google.com/maps?q=${encodeURIComponent(shop.lat)},${encodeURIComponent(shop.lng)}`;
+      }
+      if (shop.mapUrl && shop.mapUrl.trim() !== "") {
+        return shop.mapUrl.trim();
+      }
+      return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(shop.name + " " + shop.address)}`;
+    }
+
+    function switchTab(tabName) {
+      ["booking", "my-appointments", "admin"].forEach((t) => {
+        document.getElementById(`section-${t}`).classList.toggle("hidden", t !== tabName);
+        const btn = document.getElementById(`tab-${t}`);
+        if (t === tabName) {
+          btn.className = "tab-btn flex-1 md:flex-initial px-4 py-2.5 rounded-xl text-sm font-semibold bg-amber-500 text-slate-950 transition cursor-pointer";
+        } else {
+          btn.className = "tab-btn flex-1 md:flex-initial px-4 py-2.5 rounded-xl text-sm font-semibold text-slate-200 hover:bg-slate-700 transition cursor-pointer";
+        }
+      });
+    }
+
+    // Usta Kartlarını Listeleme (Müşteri Ekranı)
+    function renderBarbers() {
+      const activeBarbers = appState.barbers.filter((b) => b.active !== false);
+      if (!activeBarbers.some((b) => b.id === selectedBarberId) && activeBarbers.length > 0) {
+        selectedBarberId = activeBarbers[0].id;
+      }
+
+      const container = document.getElementById("barbers-list");
+      container.innerHTML = "";
+
+      activeBarbers.forEach((b) => {
+        const isSelected = b.id === selectedBarberId;
+        const btn = document.createElement("button");
+        btn.type = "button";
+        btn.onclick = () => {
+          selectedBarberId = b.id;
+          selectedTimeSlot = "";
+          document.getElementById("selected-time-display").value = "";
+          renderBarbers();
+          renderTimeSlots();
+          updateBookingSummary();
+        };
+        btn.className = `p-3.5 rounded-xl border text-left transition cursor-pointer flex items-center gap-3 ${
+          isSelected
+            ? "border-amber-500 bg-amber-50 ring-1 ring-amber-500"
+            : "border-slate-200 bg-white hover:border-slate-300"
+        }`;
+        btn.innerHTML = `
+          <div class="w-10 h-10 rounded-full ${isSelected ? "bg-amber-500 text-slate-950" : "bg-slate-900 text-white"} flex items-center justify-center font-extrabold text-sm shrink-0">
+            ${escapeHtml(b.name.charAt(0).toUpperCase())}
+          </div>
+          <div class="min-w-0">
+            <div class="font-bold text-sm text-slate-900 truncate">${escapeHtml(b.name)}</div>
+            <div class="text-xs text-slate-500 truncate">${escapeHtml(b.role || "Kuaför Ustası")}</div>
+          </div>
+        `;
+        container.appendChild(btn);
+      });
+
+      updateBookingSummary();
+    }
+
+    // Hizmet Listesi ve Özet
+    function renderServices() {
+      const container = document.getElementById("services-list");
+      container.innerHTML = "";
+      appState.services.forEach((srv) => {
+        const checked = selectedServiceIds.has(srv.id);
+        const div = document.createElement("button");
+        div.type = "button";
+        div.onclick = () => toggleService(srv.id);
+        div.className = `text-left p-3.5 rounded-xl border transition cursor-pointer flex items-center justify-between gap-2 ${
+          checked
+            ? "border-amber-500 bg-amber-50/70 ring-1 ring-amber-500"
+            : "border-slate-200 bg-white hover:border-slate-300"
+        }`;
+        div.innerHTML = `
+          <div>
+            <div class="font-bold text-sm text-slate-900">${escapeHtml(srv.name)}</div>
+            <div class="text-xs text-slate-500 mt-0.5">${srv.duration} dk</div>
+          </div>
+          <div class="text-sm font-extrabold text-slate-900">${srv.price} ₺</div>
+        `;
+        container.appendChild(div);
+      });
+      updateBookingSummary();
+    }
+
+    function toggleService(id) {
+      if (selectedServiceIds.has(id)) {
+        if (selectedServiceIds.size > 1) selectedServiceIds.delete(id);
+      } else {
+        selectedServiceIds.add(id);
+      }
+      renderServices();
+    }
+
+    function updateBookingSummary() {
+      const barber = appState.barbers.find((b) => b.id === selectedBarberId);
+      const chosen = appState.services.filter((s) => selectedServiceIds.has(s.id));
+      const totalDuration = chosen.reduce((acc, s) => acc + Number(s.duration || 0), 0);
+      const totalPrice = chosen.reduce((acc, s) => acc + Number(s.price || 0), 0);
+
+      document.getElementById("summary-barber").textContent = barber ? barber.name : "-";
+      document.getElementById("summary-services").textContent = chosen.length
+        ? chosen.map((s) => s.name).join(", ")
+        : "Seçilmedi";
+      document.getElementById("summary-duration").textContent = `${totalDuration} dk`;
+      document.getElementById("summary-price").textContent = `${totalPrice} ₺`;
+    }
+
+    // Seçili Ustaya Göre Saat Slotları
+    function generateTimeSlots() {
+      const slots = [];
+      for (let h = 9; h <= 20; h++) {
+        slots.push(`${String(h).padStart(2, "0")}:00`);
+        slots.push(`${String(h).padStart(2, "0")}:30`);
+      }
+      return slots;
+    }
+
+    function renderTimeSlots() {
+      const dateVal = document.getElementById("booking-date").value;
+      const grid = document.getElementById("time-slots-grid");
+      const barber = appState.barbers.find((b) => b.id === selectedBarberId);
+      grid.innerHTML = "";
+
+      const bookedTimes = new Set(
+        appState.appointments
+          .filter(
+            (a) =>
+              a.date === dateVal &&
+              a.status !== "cancelled" &&
+              (a.barberId ? a.barberId === selectedBarberId : true)
+          )
+          .map((a) => a.time)
+      );
+
+      if (selectedTimeSlot && bookedTimes.has(selectedTimeSlot)) {
+        selectedTimeSlot = "";
+        document.getElementById("selected-time-display").value = "";
+      }
+
+      generateTimeSlots().forEach((slot) => {
+        const isBooked = bookedTimes.has(slot);
+        const isSelected = selectedTimeSlot === slot;
+        const btn = document.createElement("button");
+        btn.type = "button";
+        btn.disabled = isBooked;
+        btn.textContent = isBooked ? `${slot} (Dolu)` : slot;
+
+        if (isBooked) {
+          btn.className = "py-2.5 px-2 rounded-xl text-xs font-semibold bg-slate-100 text-slate-400 line-through cursor-not-allowed";
+        } else if (isSelected) {
+          btn.className = "py-2.5 px-2 rounded-xl text-xs font-bold bg-amber-500 text-slate-950 ring-2 ring-amber-400 cursor-pointer";
+        } else {
+          btn.className = "py-2.5 px-2 rounded-xl text-xs font-semibold bg-slate-50 hover:bg-amber-100 text-slate-800 border border-slate-200 transition cursor-pointer";
+        }
+
+        btn.onclick = () => {
+          selectedTimeSlot = slot;
+          document.getElementById("selected-time-display").value = `${barber ? barber.name : ""} • ${dateVal} — ${slot}`;
+          renderTimeSlots();
+        };
+        grid.appendChild(btn);
+      });
+    }
+
+    // Randevu Kaydetme
+    function submitBooking(e) {
+      e.preventDefault();
+      const dateVal = document.getElementById("booking-date").value;
+      const name = document.getElementById("customer-name").value.trim();
+      const phone = document.getElementById("customer-phone").value.trim();
+      const note = document.getElementById("customer-note").value.trim();
+      const barber = appState.barbers.find((b) => b.id === selectedBarberId);
+      const chosen = appState.services.filter((s) => selectedServiceIds.has(s.id));
+
+      if (!barber) {
+        showMessage("Lütfen bir usta seçin.");
+        return;
+      }
+      if (!chosen.length) {
+        showMessage("Lütfen en az bir hizmet seçin.");
+        return;
+      }
+      if (!selectedTimeSlot) {
+        showMessage("Lütfen müsait bir randevu saati seçin.");
+        return;
+      }
+
+      const alreadyTaken = appState.appointments.some(
+        (a) =>
+          a.date === dateVal &&
+          a.time === selectedTimeSlot &&
+          a.status !== "cancelled" &&
+          a.barberId === barber.id
+      );
+      if (alreadyTaken) {
+        showMessage(`${barber.name} için bu saat az önce doldu. Lütfen başka bir saat seçin.`);
+        renderTimeSlots();
+        return;
+      }
+
+      const newApt = {
+        id: "apt-" + Date.now(),
+        barberId: barber.id,
+        barberName: barber.name,
+        customerName: name,
+        phone,
+        date: dateVal,
+        time: selectedTimeSlot,
+        services: chosen.map((s) => s.name),
+        totalDuration: chosen.reduce((acc, s) => acc + Number(s.duration || 0), 0),
+        totalPrice: chosen.reduce((acc, s) => acc + Number(s.price || 0), 0),
+        note,
+        status: "confirmed"
+      };
+
+      appState.appointments.push(newApt);
+      saveState(true);
+
+      const box = document.getElementById("booking-confirmation");
+      const mapUrl = buildMapLink(appState.shop);
+      const waText = encodeURIComponent(
+        `Merhaba ${appState.shop.name}, ${barber.name} için ${dateVal} saat ${selectedTimeSlot} (${newApt.services.join(", ")}) randevu oluşturdum. Adım: ${name}. Konum: ${mapUrl}`
+      );
+      const cleanShopPhone = (appState.shop.phone || "").replace(/\D/g, "").replace(/^0/, "90");
+
+      box.classList.remove("hidden");
+      box.innerHTML = `
+        <div class="font-bold text-sm">✅ Randevunuz Alındı!</div>
+        <div><strong>Usta:</strong> ${escapeHtml(barber.name)}</div>
+        <div><strong>Tarih / Saat:</strong> ${dateVal} — ${selectedTimeSlot}</div>
+        <div><strong>Hizmetler:</strong> ${escapeHtml(newApt.services.join(", "))} (${newApt.totalPrice} ₺)</div>
+        <div class="pt-1 flex flex-wrap gap-2">
+          <a href="https://wa.me/${cleanShopPhone}?text=${waText}" target="_blank" rel="noopener noreferrer" class="bg-emerald-600 text-white font-semibold px-3 py-1.5 rounded-xl">
+            WhatsApp ile Bildir
+          </a>
+          <a href="${mapUrl}" target="_blank" rel="noopener noreferrer" class="bg-white border border-emerald-300 text-emerald-900 font-semibold px-3 py-1.5 rounded-xl">
+            Konumu Aç
+          </a>
+        </div>
+      `;
+
+      document.getElementById("customer-name").value = "";
+      document.getElementById("customer-phone").value = "";
+      document.getElementById("customer-note").value = "";
+      selectedTimeSlot = "";
+      document.getElementById("selected-time-display").value = "";
+      renderTimeSlots();
+      if (isAdminUnlocked) renderAdminAppointments();
+      showMessage("Randevunuz başarıyla oluşturuldu!");
+    }
+
+    // Müşteri Randevularım Sorgulama
+    function searchMyAppointments(e) {
+      e.preventDefault();
+      const qPhone = document.getElementById("lookup-phone").value.replace(/\D/g, "");
+      const container = document.getElementById("my-appointments-result");
+
+      const matches = appState.appointments.filter(
+        (a) => a.phone.replace(/\D/g, "").includes(qPhone) && qPhone.length >= 6
+      );
+
+      if (!matches.length) {
+        container.innerHTML = `<p class="text-sm text-slate-500 text-center py-6">Bu numaraya kayıtlı randevu bulunamadı.</p>`;
+        return;
+      }
+
+      container.innerHTML = matches
+        .sort((a, b) => `${b.date} ${b.time}`.localeCompare(`${a.date} ${a.time}`))
+        .map((a) => {
+          const badge =
+            a.status === "cancelled"
+              ? `<span class="text-xs font-bold px-2.5 py-1 rounded-full bg-rose-100 text-rose-700">İptal Edildi</span>`
+              : a.status === "completed"
+              ? `<span class="text-xs font-bold px-2.5 py-1 rounded-full bg-emerald-100 text-emerald-700">Tamamlandı</span>`
+              : `<span class="text-xs font-bold px-2.5 py-1 rounded-full bg-amber-100 text-amber-800">Onaylandı</span>`;
+
+          const cancelBtn =
+            a.status === "confirmed"
+              ? `<button onclick="cancelAppointmentByCustomer('${a.id}')" class="text-xs font-bold text-rose-600 hover:bg-rose-50 border border-rose-200 px-3 py-2 rounded-xl cursor-pointer">Randevuyu İptal Et</button>`
+              : "";
+
+          return `
+            <div class="border border-slate-200 rounded-xl p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-slate-50/50">
+              <div>
+                <div class="flex items-center gap-2 flex-wrap">
+                  <span class="font-bold text-slate-900">${a.date} • ${a.time}</span>
+                  <span class="text-xs font-bold bg-slate-900 text-amber-400 px-2.5 py-0.5 rounded-full">${escapeHtml(a.barberName || "Usta")}</span>
+                  ${badge}
+                </div>
+                <p class="text-xs text-slate-600 mt-1">${escapeHtml(a.services.join(", "))} — <strong>${a.totalPrice} ₺</strong></p>
+              </div>
+              <div>${cancelBtn}</div>
+            </div>
+          `;
+        })
+        .join("");
+    }
+
+    function cancelAppointmentByCustomer(id) {
+      const apt = appState.appointments.find((a) => a.id === id);
+      if (!apt) return;
+      apt.status = "cancelled";
+      saveState(true);
+      renderTimeSlots();
+      searchMyAppointments(new Event("submit"));
+      if (isAdminUnlocked) renderAdminAppointments();
+      showMessage("Randevunuz iptal edildi.");
+    }
+
+    // Yetkili Paneli PIN & Alt Sekmeler
+    function verifyAdminPin(e) {
+      e.preventDefault();
+      const inputPin = document.getElementById("admin-pin-input").value.trim();
+      if (inputPin === String(appState.shop.adminPin || "1234")) {
+        isAdminUnlocked = true;
+        document.getElementById("admin-pin-error").classList.add("hidden");
+        document.getElementById("admin-login-box").classList.add("hidden");
+        document.getElementById("admin-panel-content").classList.remove("hidden");
+        renderAdminAppointments();
+        renderAdminBarbers();
+        renderAdminServices();
+      } else {
+        document.getElementById("admin-pin-error").classList.remove("hidden");
+      }
+    }
+
+    function lockAdminPanel() {
+      isAdminUnlocked = false;
+      document.getElementById("admin-pin-input").value = "";
+      document.getElementById("admin-panel-content").classList.add("hidden");
+      document.getElementById("admin-login-box").classList.remove("hidden");
+    }
+
+    function switchAdminSubTab(sub) {
+      ["appointments", "barbers", "location", "services"].forEach((s) => {
+        document.getElementById(`admin-sub-${s}`).classList.toggle("hidden", s !== sub);
+        const btn = document.getElementById(`subtab-${s}`);
+        btn.className =
+          s === sub
+            ? "px-4 py-2.5 rounded-xl text-xs sm:text-sm font-bold bg-slate-900 text-white cursor-pointer"
+            : "px-4 py-2.5 rounded-xl text-xs sm:text-sm font-semibold bg-slate-100 text-slate-700 hover:bg-slate-200 cursor-pointer";
+      });
+    }
+
+    // Yetkili Randevu Defteri & Usta Bazlı İstatistikler
+    function renderAdminAppointments() {
+      const today = getTodayISO();
+      const todayApts = appState.appointments.filter((a) => a.date === today && a.status !== "cancelled");
+      const completedApts = appState.appointments.filter((a) => a.status === "completed");
+      const revenue = completedApts.reduce((sum, a) => sum + Number(a.totalPrice || 0), 0);
+
+      document.getElementById("stat-today-count").textContent = todayApts.length;
+      document.getElementById("stat-completed-count").textContent = completedApts.length;
+      document.getElementById("stat-revenue").textContent = `${revenue} ₺`;
+
+      const filterSelect = document.getElementById("admin-filter-barber");
+      const prevVal = filterSelect.value;
+      filterSelect.innerHTML = `<option value="">Tüm Ustalar</option>` +
+        appState.barbers.map((b) => `<option value="${b.id}">${escapeHtml(b.name)}</option>`).join("");
+      filterSelect.value = prevVal;
+
+      const barberStatsGrid = document.getElementById("barber-stats-grid");
+      barberStatsGrid.innerHTML = appState.barbers.map((b) => {
+        const bApts = appState.appointments.filter((a) => a.barberId === b.id && a.status !== "cancelled");
+        const bDone = appState.appointments.filter((a) => a.barberId === b.id && a.status === "completed");
+        const bRev = bDone.reduce((s, a) => s + Number(a.totalPrice || 0), 0);
+        return `
+          <div class="glass-card rounded-2xl p-4 border-l-4 border-l-amber-500">
+            <div class="flex items-center justify-between">
+              <span class="font-bold text-sm text-slate-900">${escapeHtml(b.name)}</span>
+              <span class="text-xs text-slate-500">${bApts.length} Randevu</span>
+            </div>
+            <div class="mt-2 flex items-baseline justify-between">
+              <span class="text-xs text-slate-500">Tamamlanan Ciro:</span>
+              <span class="text-base font-extrabold text-slate-900">${bRev} ₺</span>
+            </div>
+          </div>
+        `;
+      }).join("");
+
+      const filterDate = document.getElementById("admin-filter-date").value;
+      const filterBarber = filterSelect.value;
+
+      const list = appState.appointments
+        .filter((a) => (!filterDate ? true : a.date === filterDate))
+        .filter((a) => (!filterBarber ? true : a.barberId === filterBarber))
+        .sort((a, b) => `${a.date} ${a.time}`.localeCompare(`${b.date} ${b.time}`));
+
+      const container = document.getElementById("admin-appointments-list");
+      if (!list.length) {
+        container.innerHTML = `<p class="text-sm text-slate-400 text-center py-6">Bu kriterde randevu bulunmuyor.</p>`;
+        return;
+      }
+
+      container.innerHTML = list
+        .map((a) => {
+          const statusLabel =
+            a.status === "completed"
+              ? `<span class="text-xs font-bold px-2.5 py-1 rounded-full bg-emerald-100 text-emerald-700">Tamamlandı</span>`
+              : a.status === "cancelled"
+              ? `<span class="text-xs font-bold px-2.5 py-1 rounded-full bg-rose-100 text-rose-700">İptal</span>`
+              : `<span class="text-xs font-bold px-2.5 py-1 rounded-full bg-amber-100 text-amber-800">Bekliyor</span>`;
+
+          return `
+            <div class="border border-slate-200 rounded-xl p-4 flex flex-col md:flex-row md:items-center justify-between gap-3">
+              <div class="space-y-1">
+                <div class="flex items-center gap-2 flex-wrap">
+                  <span class="text-xs font-bold bg-slate-900 text-amber-400 px-2.5 py-0.5 rounded-full">${escapeHtml(a.barberName || "Usta")}</span>
+                  <span class="font-bold text-slate-900">${escapeHtml(a.customerName)}</span>
+                  <span class="text-xs text-slate-500">(${escapeHtml(a.phone)})</span>
+                  <span class="text-xs font-bold text-slate-700 bg-slate-100 px-2 py-0.5 rounded-lg">${a.date} • ${a.time}</span>
+                  ${statusLabel}
+                </div>
+                <p class="text-xs text-slate-600">${escapeHtml(a.services.join(", "))} — <strong>${a.totalPrice} ₺</strong> ${a.note ? `• <em>Not: ${escapeHtml(a.note)}</em>` : ""}</p>
+              </div>
+              <div class="flex items-center gap-2 flex-wrap">
+                <button onclick="setAppointmentStatus('${a.id}', 'completed')" class="text-xs font-bold bg-emerald-600 hover:bg-emerald-700 text-white px-3 py-2 rounded-xl cursor-pointer">
+                  Tamamlandı
+                </button>
+                <button onclick="setAppointmentStatus('${a.id}', 'cancelled')" class="text-xs font-bold bg-rose-100 hover:bg-rose-200 text-rose-700 px-3 py-2 rounded-xl cursor-pointer">
+                  İptal Et
+                </button>
+              </div>
+            </div>
+          `;
+        })
+        .join("");
+    }
+
+    function setAppointmentStatus(id, status) {
+      const apt = appState.appointments.find((a) => a.id === id);
+      if (!apt) return;
+      apt.status = status;
+      saveState(true);
+      renderTimeSlots();
+      renderAdminAppointments();
+      showMessage(status === "completed" ? "Randevu tamamlandı olarak işaretlendi." : "Randevu iptal edildi.");
+    }
+
+    // Çoklu Usta Ekleme / Aktif-Pasif / Silme
+    function addNewBarber(e) {
+      e.preventDefault();
+      const name = document.getElementById("new-barber-name").value.trim();
+      const role = document.getElementById("new-barber-role").value.trim() || "Kuaför Ustası";
+      if (!name) return;
+
+      appState.barbers.push({
+        id: "brb-" + Date.now(),
+        name,
+        role,
+        active: true
+      });
+      saveState(true);
+      renderBarbers();
+      renderAdminBarbers();
+      renderAdminAppointments();
+      document.getElementById("new-barber-name").value = "";
+      document.getElementById("new-barber-role").value = "";
+      showMessage(`${name} listeye eklendi.`);
+    }
+
+    function toggleBarberActive(id) {
+      const target = appState.barbers.find((b) => b.id === id);
+      if (!target) return;
+      const activeCount = appState.barbers.filter((b) => b.active !== false).length;
+      if (target.active !== false && activeCount <= 1) {
+        showMessage("Dükkanda en az bir aktif usta bulunmalıdır.");
+        return;
+      }
+      target.active = target.active === false ? true : false;
+      saveState(true);
+      renderBarbers();
+      renderTimeSlots();
+      renderAdminBarbers();
+    }
+
+    function removeBarber(id) {
+      if (appState.barbers.length <= 1) {
+        showMessage("En az bir usta kayıtlı kalmalıdır.");
+        return;
+      }
+      appState.barbers = appState.barbers.filter((b) => b.id !== id);
+      saveState(true);
+      renderBarbers();
+      renderTimeSlots();
+      renderAdminBarbers();
+      renderAdminAppointments();
+      showMessage("Usta kaydı silindi.");
+    }
+
+    function renderAdminBarbers() {
+      const container = document.getElementById("admin-barbers-list");
+      container.innerHTML = appState.barbers
+        .map((b) => {
+          const isActive = b.active !== false;
+          return `
+            <div class="py-3 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+              <div>
+                <div class="flex items-center gap-2">
+                  <span class="font-bold text-sm text-slate-900">${escapeHtml(b.name)}</span>
+                  <span class="text-xs px-2 py-0.5 rounded-full font-semibold ${isActive ? "bg-emerald-100 text-emerald-700" : "bg-slate-200 text-slate-600"}">
+                    ${isActive ? "Aktif" : "İzinli / Pasif"}
+                  </span>
+                </div>
+                <p class="text-xs text-slate-500">${escapeHtml(b.role || "Kuaför Ustası")}</p>
+              </div>
+              <div class="flex items-center gap-3">
+                <button onclick="toggleBarberActive('${b.id}')" class="text-xs font-semibold text-slate-700 bg-slate-100 hover:bg-slate-200 px-3 py-2 rounded-xl cursor-pointer">
+                  ${isActive ? "Pasife Al" : "Aktifleştir"}
+                </button>
+                <button onclick="removeBarber('${b.id}')" class="text-xs font-semibold text-rose-600 hover:underline px-2 py-2 cursor-pointer">
+                  Sil
+                </button>
+              </div>
+            </div>
+          `;
+        })
+        .join("");
+    }
+
+    // Yetkili Konum Alma (GPS) & Paylaşım
+    function fetchCurrentGpsLocation() {
+      const box = document.getElementById("gps-status-box");
+      box.classList.remove("hidden");
+
+      if (!navigator.geolocation) {
+        box.className = "rounded-xl p-3 text-xs font-semibold bg-rose-50 text-rose-700 border border-rose-200";
+        box.textContent = "Cihazınızda GPS konum servisi desteklenmiyor.";
+        return;
+      }
+
+      box.className = "rounded-xl p-3 text-xs font-semibold bg-blue-50 text-blue-800 border border-blue-200";
+      box.textContent = "Konum alınıyor, lütfen bekleyin...";
+
+      navigator.geolocation.getCurrentPosition(
+        (pos) => {
+          const lat = pos.coords.latitude.toFixed(6);
+          const lng = pos.coords.longitude.toFixed(6);
+          const mapLink = `https://www.google.com/maps?q=${lat},${lng}`;
+
+          document.getElementById("cfg-shop-lat").value = lat;
+          document.getElementById("cfg-shop-lng").value = lng;
+          document.getElementById("cfg-shop-map-url").value = mapLink;
+
+          appState.shop.lat = lat;
+          appState.shop.lng = lng;
+          appState.shop.mapUrl = mapLink;
+          saveState(true);
+          applyShopBranding();
+
+          box.className = "rounded-xl p-3 text-xs font-semibold bg-emerald-50 text-emerald-800 border border-emerald-200";
+          box.textContent = `GPS konumu alındı ve kaydedildi (${lat}, ${lng}).`;
+        },
+        (err) => {
+          box.className = "rounded-xl p-3 text-xs font-semibold bg-amber-50 text-amber-800 border border-amber-200";
+          box.textContent = `Konum alınamadı (${err.message}). Koordinat veya harita linkini elle de girebilirsiniz.`;
+        },
+        { enableHighAccuracy: true, timeout: 10000 }
+      );
+    }
+
+    function saveShopSettings(e) {
+      e.preventDefault();
+      appState.shop = {
+        name: document.getElementById("cfg-shop-name").value.trim() || "Altınşehir Ahmet Erkek Kuaförü",
+        phone: document.getElementById("cfg-shop-phone").value.trim(),
+        address: document.getElementById("cfg-shop-address").value.trim(),
+        hours: document.getElementById("cfg-shop-hours").value.trim(),
+        lat: document.getElementById("cfg-shop-lat").value.trim(),
+        lng: document.getElementById("cfg-shop-lng").value.trim(),
+        mapUrl: document.getElementById("cfg-shop-map-url").value.trim(),
+        adminPin: document.getElementById("cfg-admin-pin").value.trim() || "1234"
+      };
+      saveState(true);
+      applyShopBranding();
+
+      const box = document.getElementById("gps-status-box");
+      box.classList.remove("hidden");
+      box.className = "rounded-xl p-3 text-xs font-semibold bg-emerald-50 text-emerald-800 border border-emerald-200";
+      box.textContent = "Dükkan ve konum bilgileri güncellendi.";
+    }
+
+    function getLocationShareText() {
+      const s = appState.shop;
+      const link = buildMapLink(s);
+      const gpsLine = s.lat && s.lng ? `\nKoordinat: ${s.lat}, ${s.lng}` : "";
+      return `${s.name} Konum Bilgisi\nAdres: ${s.address}${gpsLine}\nÇalışma Saatleri: ${s.hours}\nHarita: ${link}`;
+    }
+
+    function shareLocationOnWhatsApp() {
+      const text = encodeURIComponent(getLocationShareText());
+      window.open(`https://wa.me/?text=${text}`, "_blank", "noopener,noreferrer");
+    }
+
+    function copyLocationInfo() {
+      const text = getLocationShareText();
+      const tempArea = document.createElement("textarea");
+      tempArea.value = text;
+      document.body.appendChild(tempArea);
+      tempArea.select();
+      document.execCommand("copy");
+      document.body.removeChild(tempArea);
+      showMessage("Konum ve adres bilgisi panoya kopyalandı.");
+    }
+
+    // Hizmet Ekleme & Silme
+    function addNewService(e) {
+      e.preventDefault();
+      const name = document.getElementById("new-srv-name").value.trim();
+      const duration = Number(document.getElementById("new-srv-duration").value);
+      const price = Number(document.getElementById("new-srv-price").value);
+
+      appState.services.push({
+        id: "srv-" + Date.now(),
+        name,
+        duration,
+        price
+      });
+      saveState(true);
+      renderServices();
+      renderAdminServices();
+      document.getElementById("new-srv-name").value = "";
+      document.getElementById("new-srv-duration").value = "";
+      document.getElementById("new-srv-price").value = "";
+      showMessage("Yeni hizmet eklendi.");
+    }
+
+    function removeService(id) {
+      if (appState.services.length <= 1) {
+        showMessage("En az bir hizmet bulunmalıdır.");
+        return;
+      }
+      appState.services = appState.services.filter((s) => s.id !== id);
+      selectedServiceIds.delete(id);
+      if (selectedServiceIds.size === 0) selectedServiceIds.add(appState.services[0].id);
+      saveState(true);
+      renderServices();
+      renderAdminServices();
+      showMessage("Hizmet silindi.");
+    }
+
+    function renderAdminServices() {
+      const container = document.getElementById("admin-services-list");
+      container.innerHTML = appState.services
+        .map(
+          (s) => `
+          <div class="py-2.5 flex items-center justify-between gap-2">
+            <div>
+              <span class="font-bold text-sm text-slate-900">${escapeHtml(s.name)}</span>
+              <span class="text-xs text-slate-500 ml-2">${s.duration} dk • <strong>${s.price} ₺</strong></span>
+            </div>
+            <button onclick="removeService('${s.id}')" class="text-xs font-semibold text-rose-600 hover:underline px-2 py-1.5 cursor-pointer">
+              Sil
+            </button>
+          </div>
+        `
+        )
+        .join("");
+    }
+
+    function escapeHtml(str) {
+      return String(str)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;");
+    }
+
+    // Başlangıç Yüklemesi
+    (function init() {
+      const today = getTodayISO();
+      document.getElementById("booking-date").value = today;
+      document.getElementById("booking-date").min = today;
+      applyShopBranding();
+      renderBarbers();
+      renderServices();
+      renderTimeSlots();
+    })();
+  </script>
+</body>
+</html>
